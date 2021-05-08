@@ -18,7 +18,7 @@ const showBooks = (bookList) => {
   for (let i = 0; i < forLength; i++) {
     const img = document.createElement("img");
     img.src =
-      `http://covers.openlibrary.org/b/isbn/${bookList.docs[i].isbn?.[0]}-M.jpg` ||
+      `https://covers.openlibrary.org/b/isbn/${bookList.docs[i].isbn?.[0]}-M.jpg` ||
       "";
 
     const checkImg = (e) => {
@@ -48,7 +48,7 @@ async function getBooks(keyword) {
   //   const keyword = "javascript";
   //   const keyword = "you don't know js";
   const response = await fetch(
-    `http://openlibrary.org/search.json?q="${keyword}"`
+    `https://openlibrary.org/search.json?q="${keyword}"`
   );
   const bookList = await response.json();
 
