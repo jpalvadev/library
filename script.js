@@ -1,9 +1,10 @@
-const booksDiv = document.querySelector(".book-list");
-const input = document.querySelector(".input-text");
-const btn = document.querySelector(".btn");
+const booksDiv = document.querySelector('.book-list');
+const input = document.querySelector('.input-text');
+const btn = document.querySelector('.btn');
+let isLoaded = false;
 
-btn.addEventListener("click", (e) => {
-  booksDiv.innerHTML = "";
+btn.addEventListener('click', (e) => {
+  booksDiv.innerHTML = '';
   e.preventDefault();
   getBooks(input.value);
 });
@@ -19,19 +20,30 @@ async function getBooks(keyword) {
   console.log(forLength);
   console.log(bookList.docs.length);
 
-  for (let i = 0; i < forLength; i++) {
-    const p = document.createElement("p");
-    const img = document.createElement("img");
+  let j = 0;
+  for (let i = 0; i < bookList.docs.length; i++) {
+    if (j > 10) break;
+    const p = document.createElement('p');
+    const img = document.createElement('img');
     img.src =
       `http://covers.openlibrary.org/b/isbn/${bookList.docs[i].isbn?.[0]}-M.jpg` ||
-      "";
-    // http://covers.openlibrary.org/b/isbn/0385472579-S.jpg
-    console.log(img.src);
-    p.textContent = bookList.docs[i].title;
-    booksDiv.appendChild(p);
-    booksDiv.appendChild(img);
+      '';
+
+    const checkImg = (e) => {
+      img.removeEventListener('load', checkImg);
+      isLoaded = img.complete && img.naturalHeight !== 1;
+      if (!isLoaded) return;
+
+      p.textContent = `${bookList.docs[i].title} - ${
+        bookList.docs[i].author_name?.[0] || ''
+      }`;
+      booksDiv.appendChild(p);
+      booksDiv.appendChild(img);
+      j++;
+    };
+
+    img.addEventListener('load', checkImg);
   }
-  //   return bookList;
 }
 
 // document.addEventListener("DOMContentLoaded", getBooks);
