@@ -1,0 +1,30 @@
+.nav {
+  background-color: var(--darkest-color);
+  display: flex;
+  // height: 10rem;
+  height: 10vh;
+  justify-content: center;
+  align-items: center;
+}
+
+.book-list {
+  /* background-color: antiquewhite; */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.book {
+  /* margin */
+  /* background-color: blue; */
+  cursor: pointer;
+  margin-block: 1rem;
+}
+
+.book-image {
+  margin: 0 auto;
+  text-align: center;
+  display: flex;
+  height: 300px;
+  width: auto;
+}

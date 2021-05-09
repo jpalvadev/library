@@ -1,0 +1,45 @@
+.add-book-btn {
+  // position: fixed;
+  z-index: 2;
+  width: 8rem;
+  height: 8rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  border-radius: 50%;
+  border: none;
+  outline: none;
+  transition: all 0.5s;
+  cursor: pointer;
+
+  span {
+    font-size: 5rem;
+  }
+
+  &--add {
+    position: fixed;
+    background-color: var(--primary-color);
+    right: 2.4rem;
+    bottom: 2.4rem;
+
+    &.transform-to-cancel {
+      transform: rotate(225deg);
+      background-color: var(--color-red);
+    }
+  }
+
+  &--ok {
+    position: absolute;
+    background-color: var(--color-green);
+    left: 2.4rem;
+    // bottom: -54.8rem;
+    bottom: 2.4rem;
+    // opacity: 0;
+    // transition: 0.1s;
+  }
+
+  &:hover {
+    opacity: 0.7;
+  }
+}

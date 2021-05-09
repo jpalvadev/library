@@ -1,0 +1,104 @@
+.books-container {
+  background: #003e46;
+  // height: 100vh;
+  // width: 100rem;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.book {
+  position: relative;
+  // width: 30rem;
+  width: 80%;
+  max-width: 30rem;
+  margin: 2rem auto;
+  height: 40rem;
+  background: #000;
+  box-shadow: 0 30px 30px rgba(0, 0, 0, 0.5);
+
+  &__cover {
+    // position: absolute;
+    // top: 0;
+    // left: 0;
+    // width: 100%;
+    // height: 100%;
+
+    img {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.5s;
+    }
+  }
+
+  &__title {
+    // display: none;
+  }
+
+  &__content {
+    position: absolute;
+    bottom: 20px;
+    left: 10%;
+    width: 80%;
+    background: white;
+    height: 60px;
+    transition: 0.5s;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-evenly;
+  }
+  &__progress {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    // gap: 2rem;
+    margin: 0 auto;
+    width: 90%;
+    // background: chartreuse;
+    margin-top: 0.5rem;
+  }
+
+  &__progress-div {
+    position: relative;
+    width: 80%;
+    margin-top: 0.1rem;
+    height: 0.7rem;
+  }
+
+  &__progress-bar {
+    background: gray;
+    border-radius: 2rem;
+    width: 90%;
+    height: 100%;
+
+    &::before {
+      content: '';
+      position: absolute;
+      border-radius: 2rem;
+      width: 100%;
+      height: 100%;
+      border: 1px solid gray;
+    }
+  }
+  &__progress-percent {
+    margin: 0;
+    font-size: 1.4rem;
+  }
+
+  &:hover .book__content {
+    height: 100%;
+    width: 100%;
+    left: 0;
+    bottom: 0;
+  }
+}
+
+.book:hover .imgBx img {
+  opacity: 0;
+}
