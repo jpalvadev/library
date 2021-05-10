@@ -3,27 +3,51 @@ const okBtn = document.querySelector('.add-book-btn--ok');
 const form = document.querySelector('.form');
 const formContainer = document.querySelector('.form-container');
 let windowWidth = window.innerWidth;
-formContainer.style.transform = `translateX(-${windowWidth}px)`;
 
-document.body.style.height = `${window.innerHeight}px`;
+// formContainer.style.transform = `translateX(-${windowWidth}px)`;
+// document.body.style.height = `${window.innerHeight}px`;
 
 const header = document.querySelector('.form__heading');
+const searchBooks = document.querySelector('.search-books');
+
+const spinner = document.querySelector('.spinner');
+
+// searchBooks.style.transform = `translateX(-${windowWidth}px)`;
+
+// document.body.style.minHeight = `${window.innerHeight}px`;
+
+//////////////////
+const showElements = (...elements) => {
+  elements.forEach((el) => {
+    el.classList.add('visible');
+  });
+};
+const hideElements = (...elements) => {
+  elements.forEach((el) => {
+    el.classList.remove('visible');
+  });
+};
+///////////////////
 
 addBtn.addEventListener('click', function (e) {
   form.reset();
 
   if (addBtn.classList.contains('transform-to-cancel')) {
-    addBtn.style.position = 'fixed';
-    form.classList.remove('visible');
+    // addBtn.style.position = 'fixed';
+    // form.classList.remove('visible');
+    searchBooks.classList.remove('visible');
+    // searchBooks.style.transform = `translateX(-${windowWidth}px)`;
     addBtn.classList.remove('transform-to-cancel');
-    // formContainer.style.transform = 'translateX(-100%)';
-    formContainer.style.transform = `translateX(-${windowWidth}px)`;
+    // formContainer.style.transform = `translateX(-${windowWidth}px)`;
   } else {
-    addBtn.style.position = 'absolute';
-    form.style.height = `${window.innerHeight}px`;
-    form.classList.add('visible');
+    // addBtn.style.position = 'absolute';
+    // form.style.height = `${window.innerHeight}px`;
+
+    // form.classList.add('visible');
+    searchBooks.classList.add('visible');
+    // searchBooks.style.transform = 'translateX(0)';
     addBtn.classList.add('transform-to-cancel');
-    formContainer.style.transform = 'translateX(0)';
+    // formContainer.style.transform = 'translateX(0)';
   }
 });
 
@@ -32,7 +56,7 @@ addBtn.addEventListener('click', function (e) {
 
 const booksDiv = document.querySelector('.book-list');
 const input = document.querySelector('.input-text');
-const Searchbtn = document.querySelector('.btn');
+const searchBtn = document.querySelector('.btn');
 
 // const showBook = (bookId) => {
 //   const img = document.createElement('img');
@@ -66,10 +90,11 @@ booksDiv.addEventListener('click', (e) => {
   showBookInfo(bookId);
 });
 
-Searchbtn.addEventListener('click', (e) => {
+searchBtn.addEventListener('click', (e) => {
   e.preventDefault();
   booksDiv.innerHTML = '';
-  booksDiv.innerHTML = `<div class="loader"></div>`;
+  // booksDiv.innerHTML = `<div class="spinner"></div>`;
+  spinner.classList.add('visible');
   getBooks(input.value);
 });
 
@@ -91,22 +116,25 @@ const showBookList = (bookList) => {
 
       if (!isLoadedOk) return;
 
-      img.classList.add('book-image');
+      img.classList.add('book__cover');
       const p = document.createElement('p');
-      const btn = document.createElement('div');
+      p.classList.add('book__title');
+      const div = document.createElement('div');
 
       p.textContent = `${bookList.docs[i].title} - ${
         bookList.docs[i].author_name?.[0] || ''
       }`;
 
-      btn.classList.add('book');
-      btn.id = bookList.docs[i].isbn[0];
-      btn.append(p, img);
-      booksContainer.appendChild(btn);
+      div.classList.add('book');
+      div.id = bookList.docs[i].isbn[0];
+      div.append(p, img);
+      booksContainer.appendChild(div);
 
       if (imgsLoaded === forLength) {
         booksDiv.innerHTML = '';
         booksDiv.appendChild(booksContainer);
+        booksDiv.classList.add('visible');
+        // booksDiv.style.transform = 'scale(1)';
       }
     };
 

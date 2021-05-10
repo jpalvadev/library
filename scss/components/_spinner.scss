@@ -1,6 +1,6 @@
-.loader {
+.spinner {
   color: #000000;
-  font-size: 90px;
+  font-size: 4rem;
   text-indent: -9999em;
   overflow: hidden;
   width: 1em;
@@ -13,4 +13,9 @@
   transform: translateZ(0);
   -webkit-animation: load6 1.7s infinite ease, round 1.7s infinite ease;
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
+  visibility: hidden;
+
+  &.visible {
+    visibility: visible;
+  }
 }
