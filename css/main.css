@@ -86,7 +86,7 @@ h2 {
   align-items: center;
 }
 
-.book-list {
+.book-results {
   /* background-color: antiquewhite; */
   display: flex;
   flex-direction: column;
@@ -97,7 +97,7 @@ h2 {
   transition: all 0.5s;
 }
 
-.book-list.visible {
+.book-results.visible {
   visibility: visible;
   transform: scale(1);
 }
@@ -115,26 +115,6 @@ h2 {
   display: flex;
   height: 300px;
   width: auto;
-}
-
-.search-books {
-  position: absolute;
-  left: 0;
-  right: 0;
-  margin-inline: auto;
-  width: 80%;
-  max-width: 50rem;
-  background: white;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  z-index: 100;
-  transform: translateX(-300rem);
-  transition: all 0.3s;
-}
-
-.search-books.visible {
-  transform: translateX(0);
 }
 
 .app {
@@ -349,22 +329,103 @@ h2 {
   opacity: 0;
 }
 
+.search-books {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  max-width: 40rem;
+  height: 20rem;
+  z-index: 101;
+  transform: scale(0);
+  transition: all 0.3s;
+}
+
+.search-books .form__input {
+  width: 80%;
+}
+
+.search-books.visible {
+  transform: scale(1);
+}
+
+.search-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  width: 80%;
+  max-width: 40rem;
+  height: 20rem;
+  z-index: 104;
+  transition: all 0.3s;
+}
+
+.search-results.visible {
+  transform: scale(1);
+}
+
+.result {
+  display: flex;
+}
+
+.result__img {
+  margin-right: 1rem;
+}
+
+.result__data {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.spinner-container {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  width: 10rem;
+  height: 10rem;
+  border-radius: 0.5rem;
+  background-color: white;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  visibility: hidden;
+}
+
+.spinner-container.visible {
+  visibility: visible;
+}
+
 .spinner {
   color: #000000;
   font-size: 4rem;
-  text-indent: -9999em;
   overflow: hidden;
   width: 1em;
   height: 1em;
   border-radius: 50%;
   margin: 72px auto;
-  position: relative;
   transform: translateZ(0);
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
-  visibility: hidden;
-}
-
-.spinner.visible {
-  visibility: visible;
+  transition: all 0.1s;
 }
 /*# sourceMappingURL=main.css.map */

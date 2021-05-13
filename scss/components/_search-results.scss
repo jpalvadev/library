@@ -1,0 +1,39 @@
+.search-results {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  margin: auto;
+  background: white;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+
+  width: 80%;
+  max-width: 40rem;
+  height: 20rem;
+  z-index: 104;
+
+  // transform: scale(0);
+  transition: all 0.3s;
+
+  &.visible {
+    transform: scale(1);
+  }
+}
+
+.result {
+  display: flex;
+
+  &__img {
+    margin-right: 1rem;
+  }
+
+  &__data {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+  }
+}

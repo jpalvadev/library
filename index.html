@@ -29,11 +29,40 @@
       </nav>
 
       <div class="search-books">
-        <input type="text" name="" class="input-text" value="vuelta al mundo" />
-        <input type="button" value="Search books" class="btn" />
+        <div class="form__input">
+          <label for="input-search-title">Search by title or author</label>
+          <input
+            type="text"
+            id="input-search-title"
+            autocomplete="off"
+            value="vuelta al mundo"
+            required
+          />
+          <div class="form__input-focus"></div>
+        </div>
+
+        <input type="button" value="Search books" class="search-btn" />
+      </div>
+
+      <div class="spinner-container">
         <div class="spinner"></div>
       </div>
-      <div class="book-list"></div>
+
+      <div class="search-results">
+        <div class="result">
+          <div class="result__img">
+            <img
+              src="http://books.google.com/books/content?id=ohuxDgAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api"
+              alt=""
+            />
+          </div>
+          <div class="result__data">
+            <p class="result__title">Ahhh Pero yo!!</p>
+            <p class="result__author">Ahhhh Parenmeeeeeee</p>
+            <p class="result__pages">9872 pages</p>
+          </div>
+        </div>
+      </div>
 
       <div class="books-container">
         <div class="book">

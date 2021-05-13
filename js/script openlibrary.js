@@ -4,133 +4,49 @@ const form = document.querySelector('.form');
 const formContainer = document.querySelector('.form-container');
 let windowWidth = window.innerWidth;
 const header = document.querySelector('.form__heading');
-const spinner = document.querySelector('.spinner-container');
-const searchResultsBox = document.querySelector('.search-results');
+const searchBooks = document.querySelector('.search-books');
+const spinner = document.querySelector('.spinner');
+const booksDiv = document.querySelector('.book-list');
+const input = document.querySelector('.input-text');
+const searchBtn = document.querySelector('.btn');
 
-// Search books box
-const searchBooksForm = document.querySelector('.search-books');
-const searchInput = document.getElementById('input-search-title');
-const searchBtn = document.querySelector('.search-btn');
+// HIDE AND SHOW ELEMENTS (adds and removes 'visible' class)
+//////////////////
+const showElements = (...elements) => {
+  elements.forEach((el) => {
+    el.classList.add('visible');
+  });
+};
+const hideElements = (...elements) => {
+  elements.forEach((el) => {
+    el.classList.remove('visible');
+  });
+};
 
-// BORRAR!!!!!!!!!!!
-
-class Book {
-  constructor(title, author, description, pages, cover, isbn) {
-    this.title = title;
-    this.author = author;
-    this.description = description;
-    this.pages = pages;
-    this.cover = cover;
-    this.isbn = isbn;
-  }
-}
-
-class Data {
-  constructor() {}
-
-  async getBookList(keyword) {
-    const response = await fetch(
-      `https://www.googleapis.com/books/v1/volumes?q=${keyword}&maxResults=20&${API_KEY}`
-    );
-    const bookList = await response.json();
-
-    return bookList;
-  }
-}
-
-class UI {
-  constructor() {}
-
-  showBookList(bookList) {
-    console.log(bookList.items[0]);
-
-    bookList.items.forEach((book) => {
-      const title = document.createElement('p');
-      title.textContent = book.volumeInfo.title;
-      const author = document.createElement('p');
-      author.textContent = book.volumeInfo.authors?.[0] || '';
-      const description = document.createElement('p');
-      description.textContent = book.volumeInfo?.description || '';
-      const pages = document.createElement('p');
-      pages.textContent = book.volumeInfo?.pageCount || '';
-      const isbn = document.createElement('p');
-      // isbn.textContent =
-      //   book.volumeInfo?.industryIdentifiers?.[1].identifier ||
-      //   book.volumeInfo?.industryIdentifiers?.[0].identifier ||
-      //   'No ISBN';
-      const img = document.createElement('img');
-
-      img.src = book.volumeInfo.imageLinks?.thumbnail;
-      searchResultsBox.append(title, author, description, pages, isbn, img);
-      // console.log(title, author, description, pages, isbn, img);
-    });
-    searchResultsBox.classList.add('visible');
-  }
-
-  showElements(...elements) {
-    elements.forEach((el) => {
-      el.classList.add('visible');
-    });
-  }
-
-  hideElements(...elements) {
-    elements.forEach((el) => {
-      el.classList.remove('visible');
-    });
-  }
-}
-
-class App {
-  constructor(data, UI) {
-    this.data = data;
-    this.UI = UI;
-  }
-
-  // Get books from API based on input text field
-  async getSearchResults(keyword) {
-    // Show Spinner
-    app.UI.showElements(spinner);
-
-    // Hide Search box
-
-    // Get books from Google
-    const bookList = await app.data.getBookList(keyword);
-    console.log(bookList);
-
-    // hide Spinner
-    app.UI.hideElements(spinner);
-
-    // Show books in the UI
-    app.UI.showBookList(bookList);
-  }
-}
-
-const app = new App(new Data(), new UI());
-
-// app.bookResults('la casa de los espiritus');
-
-// Add event listener for PLUS BUTTON
+// Add event listener for add a book button is clicked
 ///////////////////
 addBtn.addEventListener('click', function (e) {
   form.reset();
+
   if (addBtn.classList.contains('transform-to-cancel')) {
-    searchBooksForm.classList.remove('visible');
+    // addBtn.style.position = 'fixed';
+    // form.classList.remove('visible');
+    searchBooks.classList.remove('visible');
+    // searchBooks.style.transform = `translateX(-${windowWidth}px)`;
     addBtn.classList.remove('transform-to-cancel');
+    // formContainer.style.transform = `translateX(-${windowWidth}px)`;
   } else {
-    searchBooksForm.classList.add('visible');
+    // addBtn.style.position = 'absolute';
+    // form.style.height = `${window.innerHeight}px`;
+
+    // form.classList.add('visible');
+    searchBooks.classList.add('visible');
+    // searchBooks.style.transform = 'translateX(0)';
     addBtn.classList.add('transform-to-cancel');
+    // formContainer.style.transform = 'translateX(0)';
   }
 });
 
-// Search button click event listener
-searchBtn.addEventListener('click', (e) => {
-  e.preventDefault();
-  searchResultsBox.innerHTML = '';
-  spinner.classList.add('visible');
-  app.getSearchResults(searchInput.value);
-});
-
-/*
 ////////////////////////
 ////////////////////////
 // Book Class
@@ -176,7 +92,13 @@ booksDiv.addEventListener('click', (e) => {
   showBookInfo(bookId);
 });
 
-
+// Search button click event listener
+searchBtn.addEventListener('click', (e) => {
+  e.preventDefault();
+  booksDiv.innerHTML = '';
+  spinner.classList.add('visible');
+  getBooks(input.value);
+});
 
 class UI {
   constructor() {}
@@ -248,8 +170,6 @@ class App {
 }
 
 const app = new App(new Data(), new UI());
-
-*/
 
 ///////////////////////////////////
 ///////////////////////////////////
