@@ -1,18 +1,20 @@
-const addBtn = document.querySelector(".add-book-btn--add");
-const okBtn = document.querySelector(".add-book-btn--ok");
-const form = document.querySelector(".form");
-const formContainer = document.querySelector(".form-container");
+const addBtn = document.querySelector('.add-book-btn--add');
+const okBtn = document.querySelector('.add-book-btn--ok');
+const form = document.querySelector('.form');
+const formContainer = document.querySelector('.form-container');
 let windowWidth = window.innerWidth;
-const header = document.querySelector(".form__heading");
-const spinner = document.querySelector(".spinner-container");
-const searchResultsBox = document.querySelector(".search-results");
+const header = document.querySelector('.form__heading');
+const spinner = document.querySelector('.spinner-container');
+const searchResultsBox = document.querySelector('.search-results');
 
 // Search books box
-const searchBooksForm = document.querySelector(".search-books");
-const searchInput = document.getElementById("input-search-title");
-const searchBtn = document.querySelector(".search-btn");
+const searchBooksForm = document.querySelector('.search-books');
+const searchInput = document.getElementById('input-search-title');
+const searchBtn = document.querySelector('.search-btn');
 
-let searchResults = [];
+const booksContainer = document.querySelector('.books-container');
+
+// let searchResults = [];
 
 // BORRAR!!!!!!!!!!!
 
@@ -28,6 +30,8 @@ class Book {
 }
 
 class Data {
+  searchResults = [];
+
   constructor() {}
 
   async getBookList(keyword) {
@@ -35,9 +39,9 @@ class Data {
       `https://www.googleapis.com/books/v1/volumes?q=${keyword}&maxResults=20&${API_KEY}`
     );
 
-    searchResults = await response.json();
+    this.searchResults = await response.json();
 
-    return searchResults;
+    return this.searchResults;
   }
 }
 
@@ -49,48 +53,9 @@ class UI {
     let divsContainer = document.createDocumentFragment();
 
     bookList.items.forEach((book) => {
-      // console.log(book);
-      // const title = document.createElement("p");
-      // title.textContent = book.volumeInfo.title;
-      // const author = document.createElement("p");
-      // author.textContent = book.volumeInfo.authors?.[0] || "";
-      // const description = document.createElement("p");
-      // description.textContent = book.volumeInfo?.description || "";
-      // const pages = document.createElement("p");
-      // pages.textContent = book.volumeInfo?.pageCount || "";
-      // const isbn = document.createElement("p");
-      // isbn.textContent =
-      //   book.volumeInfo?.industryIdentifiers?.[1].identifier ||
-      //   book.volumeInfo?.industryIdentifiers?.[0].identifier ||
-      //   'No ISBN';
-      // const img = document.createElement("img");
+      // If there isn't an ISBN we don't add that book
+      if (!book.volumeInfo?.industryIdentifiers?.[0].identifier) return;
 
-      // img.src = book.volumeInfo.imageLinks?.thumbnail;
-      // divsContainer.append(title, author, description, pages, isbn, img);
-      // console.log(title, author, description, pages, isbn, img);
-
-      // searchResultsBox.innerHTML += `
-      // <div class="result">
-      //   <div class="result__img">
-      //     <img
-      //       src="${book.volumeInfo.imageLinks?.thumbnail}"
-      //       alt=""
-      //     />
-      //   </div>
-      //   <div class="result__data">
-      //     <p class="result__title">${book.volumeInfo.title}</p>
-      //     <p class="result__author">${book.volumeInfo.authors?.[0] || ""}</p>
-      //     <p class="result__pages">${
-      //       book.volumeInfo?.pageCount
-      //         ? book.volumeInfo?.pageCount + " pages"
-      //         : ""
-      //     }</p>
-      //     <p class="result__isbn">ISBN: ${
-      //       book.volumeInfo?.industryIdentifiers?.[0].identifier
-      //     }</p>
-      //   </div>
-      // </div>
-      // `;
       searchResultsBox.innerHTML += `
       <div class="result">
         <img class="result__img"
@@ -98,11 +63,11 @@ class UI {
           alt=""
         />
         <p class="result__title">${book.volumeInfo.title}</p>
-        <p class="result__author">${book.volumeInfo.authors?.[0] || ""}</p>
+        <p class="result__author">${book.volumeInfo.authors?.[0] || ''}</p>
         <p class="result__pages">${
           book.volumeInfo?.pageCount
-            ? book.volumeInfo?.pageCount + " pages"
-            : ""
+            ? book.volumeInfo?.pageCount + ' pages'
+            : ''
         }</p>
         <p class="result__isbn">ISBN: ${
           book.volumeInfo?.industryIdentifiers?.[0].identifier
@@ -112,18 +77,20 @@ class UI {
     });
 
     // searchResultsBox.appendChild(divsContainer);
-    searchResultsBox.classList.add("visible");
+    searchBooksForm.classList.remove('visible');
+    document.body.classList.remove('noscroll');
+    searchResultsBox.classList.add('visible');
   }
 
   showElements(...elements) {
     elements.forEach((el) => {
-      el.classList.add("visible");
+      el.classList.add('visible');
     });
   }
 
   hideElements(...elements) {
     elements.forEach((el) => {
-      el.classList.remove("visible");
+      el.classList.remove('visible');
     });
   }
 }
@@ -153,9 +120,11 @@ class App {
   }
 
   getBookData(isbn) {
-    console.log(searchResults);
-    const filtered = searchResults.items.filter((book) => {
-      return book.volumeInfo.industryIdentifiers[0].identifier === isbn;
+    // console.log(this.data.searchResults);
+    // console.log(isbn);
+
+    const filtered = this.data.searchResults.items.filter((book) => {
+      return book.volumeInfo?.industryIdentifiers?.[0].identifier === isbn;
     });
 
     console.log(filtered);
@@ -168,37 +137,44 @@ const app = new App(new Data(), new UI());
 
 // Add event listener for PLUS BUTTON
 ///////////////////
-addBtn.addEventListener("click", function (e) {
+addBtn.addEventListener('click', function (e) {
   form.reset();
-  if (addBtn.classList.contains("transform-to-cancel")) {
-    searchBooksForm.classList.remove("visible");
-    addBtn.classList.remove("transform-to-cancel");
+  if (addBtn.classList.contains('transform-to-cancel')) {
+    searchBooksForm.classList.remove('visible');
+    searchResultsBox.classList.remove('visible');
+    document.body.classList.remove('noscroll');
+    addBtn.classList.remove('transform-to-cancel');
   } else {
-    searchBooksForm.classList.add("visible");
-    addBtn.classList.add("transform-to-cancel");
+    searchBooksForm.classList.add('visible');
+    booksContainer.classList.add('visible');
+
+    searchBooksForm.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    document.body.classList.add('noscroll');
+
+    addBtn.classList.add('transform-to-cancel');
   }
 });
 
 // Search button click event listener
-searchBtn.addEventListener("click", (e) => {
+searchBtn.addEventListener('click', (e) => {
   e.preventDefault();
-  searchResultsBox.innerHTML = "";
-  spinner.classList.add("visible");
+  searchResultsBox.innerHTML = '';
+  spinner.classList.add('visible');
   app.getSearchResults(searchInput.value);
 });
 
 // Add event listener for targeting individual book using event delegation
-searchResultsBox.addEventListener("click", (e) => {
+searchResultsBox.addEventListener('click', (e) => {
   // console.log(e.target);
-  if (!e.target.closest("div").classList.contains("result")) return;
+  if (!e.target.closest('div').classList.contains('result')) return;
   // console.log("si");
 
   // app.getBook();
-  console.log(searchResults);
+  console.log(app.data.searchResults);
   // const bookId = e.target.closest("div").id;
   const targetISBN = e.target
-    .closest("div")
-    .querySelector(".result__isbn")
+    .closest('div')
+    .querySelector('.result__isbn')
     .textContent.slice(6);
 
   app.getBookData(targetISBN);

@@ -13,7 +13,7 @@
   flex-direction: column;
   align-items: center;
 
-  width: 80%;
+  // width: 80%;
   // height: 20rem;
   max-width: 40rem;
   height: 20rem;
@@ -21,9 +21,9 @@
   z-index: 101;
   // visibility: hidden;
 
-  transform: scale(0);
-  // transform: translateX(-300rem);
-  transition: all 0.3s;
+  // transform: scale(0);
+  transform: translateX(-100%);
+  transition: all 0.3s ease-in-out;
 
   .form__input {
     width: 80%;
@@ -31,7 +31,7 @@
 
   &.visible {
     // visibility: visible;
-    transform: scale(1);
-    // transform: translateX(0);
+    // transform: scale(1);
+    transform: translateX(0);
   }
 }

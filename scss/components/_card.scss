@@ -5,6 +5,11 @@
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
+
+  // &.visible {
+  //   background: red;
+  //   overflow: hidden;
+  // }
 }
 
 .book {

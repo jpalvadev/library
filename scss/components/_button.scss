@@ -12,6 +12,7 @@
   outline: none;
   transition: all 0.5s;
   cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
 
   span {
     font-size: 5rem;
@@ -22,6 +23,7 @@
     background-color: var(--primary-color);
     right: 2.4rem;
     bottom: 2.4rem;
+    z-index: 1000;
 
     &.transform-to-cancel {
       transform: rotate(225deg);
