@@ -10,6 +10,7 @@
   --primary-color: #2f80ed;
   --color-red: #db4437;
   --color-green: #0f9d58;
+  --transition-duration: 0.3s;
 }
 
 @keyframes load6 {
@@ -126,6 +127,10 @@ body.noscroll {
   width: auto;
 }
 
+.books-container {
+  min-height: 90vh;
+}
+
 .app {
   position: relative;
 }
@@ -134,30 +139,53 @@ body.noscroll {
   position: absolute;
   top: 0;
   left: 0;
-  bottom: 0;
   right: 0;
-  max-width: 80rem;
-  margin-left: auto;
-  align-items: center;
-  transition: all 0.5s;
-  transform: translateX(-300%);
+  transition: all var(--transition-duration) ease-in-out;
+  transform: scale(0);
+  display: flex;
+  justify-content: center;
+  height: 100vh;
+}
+
+.form-container.visible {
+  overflow: hidden;
+  transform: scale(1);
+}
+
+@media (min-width: 600px) {
+  .form-container {
+    top: 10vh;
+    max-height: 55rem;
+  }
 }
 
 .form {
   position: relative;
   background-color: white;
   padding: 2.4rem;
-  padding-bottom: 8rem;
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
-  transition: all 0.5s;
+  width: 100%;
+  max-width: 60rem;
+  min-height: 90vh;
+  transition: all var(--transition-duration) ease-in-out;
 }
 
 .form__heading {
   font-size: 2.4rem;
   font-weight: 700;
+}
+
+.form__cover-div {
+  position: relative;
+  height: 30vh;
+  margin-inline: auto;
+  margin-bottom: 4rem;
+}
+
+.form__cover-img {
+  height: 100%;
 }
 
 .form__input {
@@ -182,6 +210,13 @@ body.noscroll {
 .form__input input:focus ~ .form__input-focus {
   left: 0;
   background-color: var(--primary-color);
+  width: 100%;
+}
+
+.form__pages-container {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  grid-gap: 2.4rem;
   width: 100%;
 }
 
@@ -239,7 +274,7 @@ body.noscroll {
 }
 
 .add-book-btn--ok {
-  position: absolute;
+  position: fixed;
   background-color: var(--color-green);
   left: 2.4rem;
   bottom: 2.4rem;
@@ -344,19 +379,19 @@ body.noscroll {
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
+  top: 10vh;
   bottom: 0;
-  margin: auto;
+  margin: 0 auto;
   background: white;
   display: flex;
   justify-content: center;
   flex-direction: column;
   align-items: center;
   max-width: 40rem;
-  height: 20rem;
+  height: 25rem;
   z-index: 101;
-  transform: translateX(-100%);
-  transition: all 0.3s ease-in-out;
+  transform: translateX(-100vw);
+  transition: all var(--transition-duration) ease-in-out;
 }
 
 .search-books .form__input {
@@ -365,6 +400,10 @@ body.noscroll {
 
 .search-books.visible {
   transform: translateX(0);
+}
+
+.search-btn {
+  margin-top: 12rem;
 }
 
 .search-results {
@@ -378,7 +417,7 @@ body.noscroll {
   grid-gap: 1.5rem;
   z-index: 104;
   transform: translateX(100%);
-  transition: all 0.3s ease-in-out;
+  transition: all var(--transition-duration) ease-in-out;
 }
 
 .search-results.visible {
@@ -393,7 +432,7 @@ body.noscroll {
   background-color: white;
   border: 1px solid #ebebeb;
   border-radius: 5px;
-  transition: all 0.3s;
+  transition: all var(--transition-duration) ease-in-out;
   cursor: pointer;
 }
 

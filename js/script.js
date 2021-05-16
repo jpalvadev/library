@@ -1,20 +1,39 @@
+const transitionDuration =
+  parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue(
+      '--transition-duration'
+    )
+  ) * 1000;
+
+const nav = document.querySelector('.nav');
+
+// Buttons
 const addBtn = document.querySelector('.add-book-btn--add');
 const okBtn = document.querySelector('.add-book-btn--ok');
-const form = document.querySelector('.form');
-const formContainer = document.querySelector('.form-container');
-let windowWidth = window.innerWidth;
-const header = document.querySelector('.form__heading');
-const spinner = document.querySelector('.spinner-container');
-const searchResultsBox = document.querySelector('.search-results');
 
-// Search books box
+// Book Form
+const formContainer = document.querySelector('.form-container');
+const form = document.querySelector('.form');
+
+const formCover = document.querySelector('.form__cover-img');
+const formTitle = document.getElementById('title');
+const formAuthor = document.getElementById('author');
+const formPages = document.getElementById('pages');
+const formPagesRead = document.getElementById('pages-read');
+
+// const header = document.querySelector('.form__heading');
+const searchSpinner = document.querySelector('.search-spinner');
+const formSpinner = document.querySelector('.form-spinner');
+
+// Search Books Form
 const searchBooksForm = document.querySelector('.search-books');
 const searchInput = document.getElementById('input-search-title');
 const searchBtn = document.querySelector('.search-btn');
 
-const booksContainer = document.querySelector('.books-container');
+const searchResultsContainer = document.querySelector('.search-results');
 
-// let searchResults = [];
+// Entered books Container
+const booksContainer = document.querySelector('.books-container');
 
 // BORRAR!!!!!!!!!!!
 
@@ -43,6 +62,53 @@ class Data {
 
     return this.searchResults;
   }
+
+  async getBetterImg(book) {
+    // console.log(isbn);
+    let img = book.imageLinks.thumbnail;
+    // const response = await fetch(
+    //   `http://covers.openlibrary.org/b/isbn/${book.industryIdentifiers[0].identifier}-L.jpg?default=false`
+    // );
+    // console.log(book.industryIdentifiers[0].identifier);
+
+    // const data = await response.json();
+    // console.log(data);
+
+    // return data;
+
+    try {
+      for (let i = 0; i < book.industryIdentifiers.length; i++) {
+        const imgURL = `https://covers.openlibrary.org/b/isbn/${book.industryIdentifiers[i].identifier}-L.jpg`;
+        const response = await fetch(`${imgURL}?default=false`);
+
+        // const data = await response.json();
+
+        // console.log(book.industryIdentifiers[i].identifier);
+        // console.log(data);
+
+        console.log(response.status);
+        if (response.status === 404) {
+          console.log('y?');
+
+          // console.clear(); // No way to not show 404 on console??????????
+          continue;
+        } else {
+          console.log('si');
+          img = imgURL;
+          break;
+        }
+        // Promise.reject('error 404');
+
+        // img =
+
+        console.log('ma ke cosa', err);
+      }
+    } catch (err) {
+      console.log(err);
+    }
+
+    return img;
+  }
 }
 
 class UI {
@@ -51,15 +117,17 @@ class UI {
   showBookList(bookList) {
     // console.log(bookList.items[0]);
     let divsContainer = document.createDocumentFragment();
+    const imgNotFound =
+      'http://books.google.com/books/content?id=CGL7DwAAQAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api';
 
     bookList.items.forEach((book) => {
       // If there isn't an ISBN we don't add that book
       if (!book.volumeInfo?.industryIdentifiers?.[0].identifier) return;
 
-      searchResultsBox.innerHTML += `
+      searchResultsContainer.innerHTML += `
       <div class="result">
         <img class="result__img"
-          src="${book.volumeInfo.imageLinks?.thumbnail}"
+          src="${book.volumeInfo.imageLinks?.thumbnail || imgNotFound}"
           alt=""
         />
         <p class="result__title">${book.volumeInfo.title}</p>
@@ -75,11 +143,25 @@ class UI {
       </div>
       `;
     });
+  }
 
-    // searchResultsBox.appendChild(divsContainer);
-    searchBooksForm.classList.remove('visible');
-    document.body.classList.remove('noscroll');
-    searchResultsBox.classList.add('visible');
+  async showSelectedBook(book) {
+    console.log('UI data', book);
+    // const img = await app.data.getBetterImg(book);
+    // console.log(img);
+    app.UI.showElements(formSpinner);
+    formCover.src = await app.data.getBetterImg(book);
+    formCover.addEventListener('load', () => app.UI.hideElements(formSpinner), {
+      once: true,
+    });
+    // app.UI.hideElements(formSpinner);
+    // console.log(img);
+
+    // form text
+    formTitle.value = book.title;
+    formAuthor.value = book.authors?.[0] || '';
+    formPages.value = book?.pageCount || 0;
+    formPagesRead.value = 0;
   }
 
   showElements(...elements) {
@@ -93,6 +175,16 @@ class UI {
       el.classList.remove('visible');
     });
   }
+
+  clearSearchResults() {
+    setTimeout(() => {
+      searchResultsContainer.innerHTML = '';
+    }, transitionDuration);
+  }
+
+  scrollToTop() {
+    nav.scrollIntoView({ block: 'end', behavior: 'smooth' });
+  }
 }
 
 class App {
@@ -104,67 +196,82 @@ class App {
   // Get books from API based on input text field
   async getSearchResults(keyword) {
     // Show Spinner
-    app.UI.showElements(spinner);
+    this.UI.showElements(searchSpinner);
 
     // Hide Search box
 
     // Get books from Google
-    const bookList = await app.data.getBookList(keyword);
+    const bookList = await this.data.getBookList(keyword);
     console.log(bookList);
 
     // hide Spinner
-    app.UI.hideElements(spinner);
+    this.UI.hideElements(searchSpinner);
 
     // Show books in the UI
-    app.UI.showBookList(bookList);
+    this.UI.showBookList(bookList);
+
+    this.UI.showElements(searchResultsContainer);
+    this.UI.hideElements(searchBooksForm);
+    document.body.classList.remove('noscroll');
   }
 
   getBookData(isbn) {
     // console.log(this.data.searchResults);
     // console.log(isbn);
 
-    const filtered = this.data.searchResults.items.filter((book) => {
+    const book = this.data.searchResults.items.filter((book) => {
       return book.volumeInfo?.industryIdentifiers?.[0].identifier === isbn;
     });
 
-    console.log(filtered);
+    console.log(book);
+
+    this.UI.showElements(formContainer);
+    this.UI.hideElements(searchResultsContainer);
+
+    this.UI.showSelectedBook(book[0].volumeInfo);
+
+    this.UI.clearSearchResults();
+
+    // document.body.classList.remove('noscroll');
+    this.UI.scrollToTop();
+    document.body.classList.add('noscroll');
   }
 }
 
 const app = new App(new Data(), new UI());
 
-// app.bookResults('la casa de los espiritus');
-
 // Add event listener for PLUS BUTTON
 ///////////////////
 addBtn.addEventListener('click', function (e) {
   form.reset();
-  if (addBtn.classList.contains('transform-to-cancel')) {
-    searchBooksForm.classList.remove('visible');
-    searchResultsBox.classList.remove('visible');
+  formCover.src = './images/white.jpg'; // to avoid decentering of loading spinner
+  e.preventDefault();
+  if (!addBtn.classList.contains('transform-to-cancel')) {
+    app.UI.showElements(searchBooksForm, booksContainer);
+    // searchBooksForm.scrollIntoView({ block: 'end', behavior: 'smooth' });
+    app.UI.scrollToTop();
+
+    // document.body.classList.add('noscroll');
+    addBtn.classList.add('transform-to-cancel');
+  } else {
+    app.UI.hideElements(searchBooksForm, searchResultsContainer, formContainer);
+    app.UI.clearSearchResults();
+
     document.body.classList.remove('noscroll');
     addBtn.classList.remove('transform-to-cancel');
-  } else {
-    searchBooksForm.classList.add('visible');
-    booksContainer.classList.add('visible');
-
-    searchBooksForm.scrollIntoView({ block: 'end', behavior: 'smooth' });
-    document.body.classList.add('noscroll');
-
-    addBtn.classList.add('transform-to-cancel');
   }
 });
 
 // Search button click event listener
 searchBtn.addEventListener('click', (e) => {
   e.preventDefault();
-  searchResultsBox.innerHTML = '';
-  spinner.classList.add('visible');
+  searchResultsContainer.innerHTML = '';
+  searchSpinner.classList.add('visible');
   app.getSearchResults(searchInput.value);
 });
 
 // Add event listener for targeting individual book using event delegation
-searchResultsBox.addEventListener('click', (e) => {
+searchResultsContainer.addEventListener('click', (e) => {
   // console.log(e.target);
   if (!e.target.closest('div').classList.contains('result')) return;
   // console.log("si");

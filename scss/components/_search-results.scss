@@ -32,7 +32,7 @@
 
   // transform: scale(0);
   transform: translateX(100%);
-  transition: all 0.3s ease-in-out;
+  transition: all var(--transition-duration) ease-in-out;
   // overflow-y: scroll;
 
   &.visible {
@@ -55,7 +55,7 @@
   // margin: 1rem;
   // padding: 5rem;
   border-radius: 5px;
-  transition: all 0.3s;
+  transition: all var(--transition-duration) ease-in-out;
   cursor: pointer;
 
   &:hover {

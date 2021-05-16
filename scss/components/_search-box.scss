@@ -2,11 +2,11 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 0;
+  top: 10vh;
   bottom: 0;
   // margin-inline: auto;
   // margin-top: 1rem;
-  margin: auto;
+  margin: 0 auto;
   background: white;
   display: flex;
   justify-content: center;
@@ -16,22 +16,25 @@
   // width: 80%;
   // height: 20rem;
   max-width: 40rem;
-  height: 20rem;
+  height: 25rem;
   // justify-content: center;
   z-index: 101;
   // visibility: hidden;
+  // opacity: 0;
 
   // transform: scale(0);
-  transform: translateX(-100%);
-  transition: all 0.3s ease-in-out;
+  transform: translateX(-100vw);
+  transition: all var(--transition-duration) ease-in-out;
 
   .form__input {
     width: 80%;
   }
 
   &.visible {
-    // visibility: visible;
-    // transform: scale(1);
     transform: translateX(0);
   }
+}
+
+.search-btn {
+  margin-top: 12rem;
 }

@@ -32,7 +32,8 @@
   }
 
   &--ok {
-    position: absolute;
+    position: fixed;
+    // position: absolute;
     background-color: var(--color-green);
     left: 2.4rem;
     // bottom: -54.8rem;

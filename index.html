@@ -24,28 +24,33 @@
         <span class="material-icons"> add </span>
       </button>
 
+      <button type="submit" class="add-book-btn add-book-btn--ok">
+        <span class="material-icons"> done </span>
+      </button>
+
       <nav class="nav">
         <h1>My Library</h1>
       </nav>
 
       <div class="search-books">
         <div class="form__input">
-          <label for="input-search-title">Search by title or author</label>
+          <label for="input-search-title"
+            >Search by title, author or ISBN</label
+          >
           <input
             type="text"
             id="input-search-title"
             autocomplete="off"
-            value="vuelta al mundo"
+            value="0060858206"
             required
           />
           <div class="form__input-focus"></div>
         </div>
 
+        <div class="spinner-container search-spinner">
+          <div class="spinner"></div>
+        </div>
         <input type="button" value="Search books" class="search-btn" />
-      </div>
-
-      <div class="spinner-container">
-        <div class="spinner"></div>
       </div>
 
       <div class="search-results">
@@ -111,7 +116,14 @@
 
       <div class="form-container">
         <form class="form">
-          <h1 class="form__heading">Add a book</h1>
+          <!-- <h1 class="form__heading">Add a book</h1> -->
+          <div class="form__cover-div">
+            <!-- src="http://books.google.com/books/content?id=ohuxDgAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api" -->
+            <div class="spinner-container form-spinner">
+              <div class="spinner"></div>
+            </div>
+            <img src="" alt="" class="form__cover-img" />
+          </div>
 
           <div class="form__input">
             <label for="title">Title</label>
@@ -125,23 +137,38 @@
             <div class="form__input-focus"></div>
           </div>
 
-          <div class="form__input">
-            <label for="pages">Pages</label>
-            <input
-              type="number"
-              id="pages"
-              min="1"
-              max="10000"
-              autocomplete="off"
-              required
-            />
-            <div class="form__input-focus"></div>
+          <div class="form__pages-container">
+            <div class="form__input">
+              <label for="pages">Pages</label>
+              <input
+                type="number"
+                id="pages"
+                min="0"
+                max="10000"
+                autocomplete="off"
+                required
+              />
+              <div class="form__input-focus"></div>
+            </div>
+            <div class="form__input">
+              <label for="pages-read">Pages read</label>
+              <input
+                type="number"
+                id="pages-read"
+                min="1"
+                max="10000"
+                autocomplete="off"
+                required
+              />
+              <div class="form__input-focus"></div>
+            </div>
           </div>
 
           <!-- <button class="form__btn" type="submit">Create account</button> -->
-          <button type="submit" class="add-book-btn add-book-btn--ok">
+
+          <!-- <button type="submit" class="add-book-btn add-book-btn--ok">
             <span class="material-icons"> done </span>
-          </button>
+          </button> -->
         </form>
       </div>
     </div>
