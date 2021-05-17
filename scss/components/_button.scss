@@ -40,6 +40,11 @@
     bottom: 2.4rem;
     // opacity: 0;
     // transition: 0.1s;
+    visibility: hidden;
+
+    &.visible {
+      visibility: visible;
+    }
   }
 
   &:hover {

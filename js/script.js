@@ -64,44 +64,20 @@ class Data {
   }
 
   async getBetterImg(book) {
-    // console.log(isbn);
     let img = book.imageLinks.thumbnail;
-    // const response = await fetch(
-    //   `http://covers.openlibrary.org/b/isbn/${book.industryIdentifiers[0].identifier}-L.jpg?default=false`
-    // );
-    // console.log(book.industryIdentifiers[0].identifier);
-
-    // const data = await response.json();
-    // console.log(data);
-
-    // return data;
-
     try {
       for (let i = 0; i < book.industryIdentifiers.length; i++) {
         const imgURL = `https://covers.openlibrary.org/b/isbn/${book.industryIdentifiers[i].identifier}-L.jpg`;
         const response = await fetch(`${imgURL}?default=false`);
 
-        // const data = await response.json();
-
-        // console.log(book.industryIdentifiers[i].identifier);
-        // console.log(data);
-
         console.log(response.status);
         if (response.status === 404) {
-          console.log('y?');
-
           // console.clear(); // No way to not show 404 on console??????????
           continue;
         } else {
-          console.log('si');
           img = imgURL;
           break;
         }
-        // Promise.reject('error 404');
-
-        // img =
-
-        console.log('ma ke cosa', err);
       }
     } catch (err) {
       console.log(err);
@@ -112,6 +88,8 @@ class Data {
 }
 
 class UI {
+  currentBook = {};
+
   constructor() {}
 
   showBookList(bookList) {
@@ -146,7 +124,12 @@ class UI {
   }
 
   async showSelectedBook(book) {
-    console.log('UI data', book);
+    // form text
+    formTitle.value = book.title;
+    formAuthor.value = book.authors?.[0] || '';
+    formPages.value = book?.pageCount || 0;
+    formPagesRead.value = 0;
+
     // const img = await app.data.getBetterImg(book);
     // console.log(img);
     app.UI.showElements(formSpinner);
@@ -154,14 +137,55 @@ class UI {
     formCover.addEventListener('load', () => app.UI.hideElements(formSpinner), {
       once: true,
     });
+    book.cover = formCover.src;
+
+    console.log('UI data', book);
+
+    this.currentBook = book;
     // app.UI.hideElements(formSpinner);
     // console.log(img);
+  }
 
-    // form text
-    formTitle.value = book.title;
-    formAuthor.value = book.authors?.[0] || '';
-    formPages.value = book?.pageCount || 0;
-    formPagesRead.value = 0;
+  addBook() {
+    const pagesReadPerc = Math.floor(
+      (formPagesRead.value * 100) / formPages.value
+    );
+    booksContainer.innerHTML += `
+    <div class="book">
+      <div class="book__cover">
+        <img src="${this.currentBook.cover}" />
+      </div>
+      <div class="book__content">
+        <h3 class="book__title">${formTitle.value} - ${formAuthor.value}</h3>
+        <div class="book__pages-isbn">
+          <p class="book__pages"><strong>Pages:</strong><br />${
+            formPages.value
+          }</p>
+          <p class="book__isbn"><strong>ISBN:</strong><br />${
+            this.currentBook.industryIdentifiers[0].identifier
+          }</p>
+        </div>
+        <p class="book__description">${
+          this.currentBook?.description?.slice(0, 200) || 'No description'
+        }...</p>
+        <div class="book__progress">
+          <div class="book__progress-div">
+            <div class="book__progress-bar" style="width:${pagesReadPerc}%;"></div>
+          </div>
+          <p class="book__progress-percent">${pagesReadPerc}%</p>
+        </div>
+        <div class="book__btns">
+          <button class="book__delete">
+            <span class="material-icons"> delete </span>
+          </button>
+          <label class="toggle">
+            <input class="toggle__input" name="" type="checkbox" />
+            <div class="toggle__fill"></div>
+          </label>
+        </div>
+      </div>
+    </div>     
+    `;
   }
 
   showElements(...elements) {
@@ -225,7 +249,7 @@ class App {
 
     console.log(book);
 
-    this.UI.showElements(formContainer);
+    this.UI.showElements(formContainer, okBtn);
     this.UI.hideElements(searchResultsContainer);
 
     this.UI.showSelectedBook(book[0].volumeInfo);
@@ -244,6 +268,9 @@ const app = new App(new Data(), new UI());
 ///////////////////
 addBtn.addEventListener('click', function (e) {
   form.reset();
+
+  searchInput.value = ''; // borrar search input
+
   formCover.src = './images/white.jpg'; // to avoid decentering of loading spinner
   e.preventDefault();
   if (!addBtn.classList.contains('transform-to-cancel')) {
@@ -285,6 +312,13 @@ searchResultsContainer.addEventListener('click', (e) => {
     .textContent.slice(6);
 
   app.getBookData(targetISBN);
+});
+
+okBtn.addEventListener('click', () => {
+  app.UI.addBook();
+  app.UI.hideElements(formContainer, okBtn);
+
+  addBtn.classList.remove('transform-to-cancel');
 });
 
 /*
