@@ -194,7 +194,7 @@ body.noscroll {
 }
 
 .form__input label {
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   color: var(--text-color);
   display: block;
 }
@@ -319,11 +319,11 @@ body.noscroll {
 
 .book__content {
   position: absolute;
-  bottom: 20px;
+  bottom: 2rem;
   left: 10%;
   width: 80%;
   background: white;
-  height: 60px;
+  height: 4rem;
   transition: 0.5s;
   overflow: hidden;
   display: flex;
@@ -333,7 +333,9 @@ body.noscroll {
 }
 
 .book__title {
+  display: none;
   margin-top: 1rem;
+  padding-inline: 2rem;
 }
 
 .book__pages-isbn {
@@ -342,6 +344,10 @@ body.noscroll {
   width: 100%;
   padding-inline: 2rem;
   display: none;
+}
+
+.book__isbn {
+  text-align: right;
 }
 
 .book__description {
@@ -399,7 +405,8 @@ body.noscroll {
   bottom: 0;
 }
 
-.book:hover .book__description {
+.book:hover .book__description,
+.book:hover .book__title {
   display: block;
 }
 
@@ -564,5 +571,30 @@ body.noscroll {
   transform: translateZ(0);
   animation: load6 1.7s infinite ease, round 1.7s infinite ease;
   transition: all 0.1s;
+}
+
+.warning {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  height: 10vh;
+  width: 100%;
+  max-width: 60rem;
+  z-index: 1001;
+  color: white;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s linear;
+}
+
+.warning.visible {
+  visibility: visible;
+  opacity: 1;
 }
 /*# sourceMappingURL=main.css.map */

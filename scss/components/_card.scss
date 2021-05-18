@@ -43,11 +43,11 @@
 
   &__content {
     position: absolute;
-    bottom: 20px;
+    bottom: 2rem;
     left: 10%;
     width: 80%;
     background: white;
-    height: 60px;
+    height: 4rem;
     transition: 0.5s;
     overflow: hidden;
     display: flex;
@@ -57,8 +57,9 @@
   }
 
   &__title {
-    // display: none;
+    display: none;
     margin-top: 1rem;
+    padding-inline: 2rem;
   }
 
   &__pages-isbn {
@@ -67,6 +68,10 @@
     width: 100%;
     padding-inline: 2rem;
     display: none;
+  }
+
+  &__isbn {
+    text-align: right;
   }
 
   &__description {
@@ -130,7 +135,8 @@
     bottom: 0;
   }
 
-  &:hover .book__description {
+  &:hover .book__description,
+  &:hover .book__title {
     display: block;
   }
 

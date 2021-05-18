@@ -7,6 +7,8 @@ const transitionDuration =
 
 const nav = document.querySelector('.nav');
 
+document.body.style.minHeight = window.innerHeight;
+
 // Buttons
 const addBtn = document.querySelector('.add-book-btn--add');
 const okBtn = document.querySelector('.add-book-btn--ok');
@@ -20,6 +22,7 @@ const formTitle = document.getElementById('title');
 const formAuthor = document.getElementById('author');
 const formPages = document.getElementById('pages');
 const formPagesRead = document.getElementById('pages-read');
+const checkboxRead = document.querySelector('.read-checkbox');
 
 // const header = document.querySelector('.form__heading');
 const searchSpinner = document.querySelector('.search-spinner');
@@ -38,13 +41,24 @@ const booksContainer = document.querySelector('.books-container');
 // BORRAR!!!!!!!!!!!
 
 class Book {
-  constructor(title, author, description, pages, cover, isbn) {
+  constructor(
+    title,
+    author,
+    description,
+    pages,
+    pagesRead,
+    cover,
+    isbn,
+    complete
+  ) {
     this.title = title;
     this.author = author;
     this.description = description;
     this.pages = pages;
+    this.pagesRead = pagesRead;
     this.cover = cover;
     this.isbn = isbn;
+    this.complete = complete;
   }
 }
 
@@ -52,6 +66,28 @@ class Data {
   searchResults = [];
 
   constructor() {}
+
+  getBooksFromLS() {
+    let books;
+    if (localStorage.getItem('books') === null) {
+      books = [];
+    } else {
+      books = JSON.parse(localStorage.getItem('books'));
+    }
+
+    return books;
+  }
+
+  addBook(book) {
+    const books = this.getBooksFromLS();
+    books.push(book);
+    localStorage.setItem('books', JSON.stringify(books));
+  }
+
+  removeBookFromLS(isbn) {
+    const books = this.getBooksFromLS().filter((book) => book.isbn !== isbn);
+    localStorage.setItem('books', JSON.stringify(books));
+  }
 
   async getBookList(keyword) {
     const response = await fetch(
@@ -91,6 +127,12 @@ class UI {
   currentBook = {};
 
   constructor() {}
+
+  displayBooks() {
+    const books = app.data.getBooksFromLS();
+
+    books.forEach((book) => app.UI.addBook(book));
+  }
 
   showBookList(bookList) {
     // console.log(bookList.items[0]);
@@ -146,28 +188,21 @@ class UI {
     // console.log(img);
   }
 
-  addBook() {
-    const pagesReadPerc = Math.floor(
-      (formPagesRead.value * 100) / formPages.value
-    );
+  addBook(book) {
+    const pagesReadPerc = Math.floor((book.pagesRead * 100) / book.pages);
+
     booksContainer.innerHTML += `
     <div class="book">
       <div class="book__cover">
-        <img src="${this.currentBook.cover}" />
+        <img src="${book.cover}" />
       </div>
       <div class="book__content">
-        <h3 class="book__title">${formTitle.value} - ${formAuthor.value}</h3>
+        <h3 class="book__title">${book.title} - ${book.author}</h3>
         <div class="book__pages-isbn">
-          <p class="book__pages"><strong>Pages:</strong><br />${
-            formPages.value
-          }</p>
-          <p class="book__isbn"><strong>ISBN:</strong><br />${
-            this.currentBook.industryIdentifiers[0].identifier
-          }</p>
+          <p class="book__pages"><strong>Pages:</strong><br />${book.pages}</p>
+          <p class="book__isbn"><strong>ISBN:</strong><br />${book.isbn}</p>
         </div>
-        <p class="book__description">${
-          this.currentBook?.description?.slice(0, 200) || 'No description'
-        }...</p>
+        <p class="book__description">${book.description}...</p>
         <div class="book__progress">
           <div class="book__progress-div">
             <div class="book__progress-bar" style="width:${pagesReadPerc}%;"></div>
@@ -175,17 +210,31 @@ class UI {
           <p class="book__progress-percent">${pagesReadPerc}%</p>
         </div>
         <div class="book__btns">
-          <button class="book__delete">
-            <span class="material-icons"> delete </span>
-          </button>
-          <label class="toggle">
-            <input class="toggle__input" name="" type="checkbox" />
+          <button class="book__delete" data-isbn="${book.isbn}">Remove</button>
+          <label class="toggle">Read?
+            <input class="toggle__input" name="" type="checkbox" ${
+              book.complete ? 'checked' : ''
+            } />
             <div class="toggle__fill"></div>
           </label>
         </div>
       </div>
     </div>     
     `;
+  }
+
+  deleteBook(e) {
+    e.parentElement.parentElement.parentElement.remove();
+  }
+
+  showAlert(message, status) {
+    const warning = document.querySelector('.warning');
+    warning.textContent = message;
+    if (status) warning.style.backgroundColor = 'var(--color-green)';
+    else warning.style.backgroundColor = 'var(--color-red)';
+
+    this.showElements(warning);
+    setTimeout(() => this.hideElements(warning), 2000);
   }
 
   showElements(...elements) {
@@ -215,6 +264,10 @@ class App {
   constructor(data, UI) {
     this.data = data;
     this.UI = UI;
+  }
+
+  getBooks() {
+    this.UI.displayBooks();
   }
 
   // Get books from API based on input text field
@@ -264,6 +317,8 @@ class App {
 
 const app = new App(new Data(), new UI());
 
+document.addEventListener('DOMContentLoaded', app.UI.displayBooks);
+
 // Add event listener for PLUS BUTTON
 ///////////////////
 addBtn.addEventListener('click', function (e) {
@@ -278,7 +333,7 @@ addBtn.addEventListener('click', function (e) {
     // searchBooksForm.scrollIntoView({ block: 'end', behavior: 'smooth' });
     app.UI.scrollToTop();
 
-    // document.body.classList.add('noscroll');
+    document.body.classList.add('noscroll');
     addBtn.classList.add('transform-to-cancel');
   } else {
     app.UI.hideElements(searchBooksForm, searchResultsContainer, formContainer);
@@ -292,6 +347,11 @@ addBtn.addEventListener('click', function (e) {
 // Search button click event listener
 searchBtn.addEventListener('click', (e) => {
   e.preventDefault();
+
+  if (!searchInput.value) {
+    app.UI.showAlert('You have to type something...', false);
+    return;
+  }
   searchResultsContainer.innerHTML = '';
   searchSpinner.classList.add('visible');
   app.getSearchResults(searchInput.value);
@@ -315,127 +375,56 @@ searchResultsContainer.addEventListener('click', (e) => {
 });
 
 okBtn.addEventListener('click', () => {
-  app.UI.addBook();
+  // Create a book object
+  const title = formTitle.value;
+  const author = formAuthor.value;
+  const description =
+    app.UI.currentBook?.description?.slice(0, 200) || 'No description';
+  const pages = formPages.value;
+  const pagesRead = formPagesRead.value;
+  const cover = app.UI.currentBook.cover;
+  const isbn = app.UI.currentBook.industryIdentifiers[0].identifier;
+  const complete = checkboxRead.checked;
+  const book = new Book(
+    title,
+    author,
+    description,
+    pages,
+    pagesRead,
+    cover,
+    isbn,
+    complete
+  );
+
+  if (pagesRead > pages) {
+    app.UI.showAlert(
+      'You cannot read more pages than there are in the book... dah!',
+      false
+    );
+    return;
+  }
+
+  document.body.classList.remove('noscroll');
+
+  app.UI.addBook(book);
+  app.data.addBook(book);
+
   app.UI.hideElements(formContainer, okBtn);
 
   addBtn.classList.remove('transform-to-cancel');
 });
 
-/*
-////////////////////////
-////////////////////////
-// Book Class
-class Book {
-  constructor(title, author, description, pages, cover, isbn) {
-    this.title = title;
-    this.author = author;
-    this.description = description;
-    this.pages = pages;
-    this.cover = cover;
-    this.isbn = isbn;
-  }
-}
+booksContainer.addEventListener('click', (e) => {
+  console.log(e.target);
 
-///////////////////////////////////////////////////////////////
-// Shows book info when clicked on a book from the list of results
-async function showBookInfo(bookId) {
-  const response = await fetch(
-    `https://openlibrary.org/api/books?bibkeys=ISBN:${bookId}&jscmd=details&format=json`
-  );
-  const data = await response.json();
-  console.log(data);
+  if (!e.target.classList.contains('book__delete')) return;
+  // Remove book from UI
 
-  // Create variables for book object
-  const title = data[`ISBN:${bookId}`].details.title;
-  const author =
-    data[`ISBN:${bookId}`].details?.authors?.[0].name || 'No author';
-  const description =
-    data[`ISBN:${bookId}`].details?.description?.value || 'No Description';
-  const pages = data[`ISBN:${bookId}`].details?.number_of_pages || 0;
-  const cover = data[`ISBN:${bookId}`].thumbnail_url?.slice(0, -5) + 'L.jpg';
-  const isbn = data[`ISBN:${bookId}`].details.isbn_10[0];
+  app.UI.deleteBook(e.target);
 
-  // Create book object
-  const book = new Book(title, author, description, pages, cover, isbn);
-  console.log(book);
-}
-
-
-
-
-
-class UI {
-  constructor() {}
-
-  showBookList = (bookList) => {
-    // console.log(bookList);
-    let imgsLoaded = 0;
-    const forLength = bookList.docs.length <= 20 ? bookList.docs.length : 20;
-    const booksContainer = document.createDocumentFragment();
-
-    for (let i = 0; i < forLength; i++) {
-      const img = document.createElement('img');
-      img.src =
-        `https://covers.openlibrary.org/b/isbn/${bookList.docs[i].isbn?.[0]}-M.jpg` ||
-        '';
-
-      const checkImgIsValid = (e) => {
-        const isLoadedOk = img.complete && img.naturalHeight !== 1;
-        imgsLoaded++;
-
-        if (!isLoadedOk) return;
-
-        img.classList.add('book__cover');
-        const p = document.createElement('p');
-        p.classList.add('book__title');
-        const div = document.createElement('div');
-
-        p.textContent = `${bookList.docs[i].title} - ${
-          bookList.docs[i].author_name?.[0] || ''
-        }`;
-
-        div.classList.add('book');
-        div.id = bookList.docs[i].isbn[0];
-        div.append(p, img);
-        booksContainer.appendChild(div);
-
-        if (imgsLoaded === forLength) {
-          booksDiv.innerHTML = '';
-          booksDiv.appendChild(booksContainer);
-          booksDiv.classList.add('visible');
-          // booksDiv.style.transform = 'scale(1)';
-        }
-      };
-
-      img.addEventListener('load', checkImgIsValid, { once: true });
-    }
-  };
-}
-
-// Get books from API based on input text field
-async function getBooks(keyword) {
-  const response = await fetch(
-    `https://openlibrary.org/search.json?q="${keyword}"`
-  );
-  const bookList = await response.json();
-
-  app.UI.showBookList(bookList);
-}
-
-class Data {
-  constructor() {}
-}
-
-class App {
-  constructor(data, UI) {
-    this.data = data;
-    this.UI = UI;
-  }
-}
-
-const app = new App(new Data(), new UI());
-
-*/
+  // Remove book from LS
+  app.data.removeBookFromLS(e.target.dataset.isbn);
+});
 
 ///////////////////////////////////
 ///////////////////////////////////

@@ -1,0 +1,26 @@
+.warning {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  margin-inline: auto;
+  height: 10vh;
+  width: 100%;
+  max-width: 60rem;
+  z-index: 1001;
+  // background-color: var(--color-red);
+  color: white;
+  font-weight: 700;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  // vertical-align: middle;
+  visibility: hidden;
+  opacity: 0;
+  transition: all 0.3s linear;
+
+  &.visible {
+    visibility: visible;
+    opacity: 1;
+  }
+}
