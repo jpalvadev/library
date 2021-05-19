@@ -4,8 +4,6 @@
   right: 0;
   top: 10vh;
   bottom: 0;
-  // margin-inline: auto;
-  // margin-top: 1rem;
   margin: 0 auto;
   background: white;
   display: flex;
@@ -13,16 +11,9 @@
   flex-direction: column;
   align-items: center;
 
-  // width: 80%;
-  // height: 20rem;
   max-width: 40rem;
   height: 25rem;
-  // justify-content: center;
   z-index: 101;
-  // visibility: hidden;
-  // opacity: 0;
-
-  // transform: scale(0);
   transform: translateX(-100vw);
   transition: all var(--transition-duration) ease-in-out;
 
