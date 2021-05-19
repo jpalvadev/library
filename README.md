@@ -2,7 +2,7 @@
 
 This Project is part of The Odin Project's Curriculum
 
-- [Live Here](https://jpalvadev.github.io/Calculator/)
+- [Live Here](https://jpalvadev.github.io/library/)
 
 ## Things I learned - getting better at
 
