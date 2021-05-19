@@ -130,7 +130,7 @@ class Data {
 
         console.log(response.status);
         if (response.status === 404) {
-          // console.clear(); // No way to not show 404 on console??????????
+          console.clear(); // No way to not show 404 on console??????????
           continue;
         } else {
           img = imgURL;
