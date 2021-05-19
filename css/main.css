@@ -94,6 +94,7 @@ body.noscroll {
   height: 10vh;
   justify-content: center;
   align-items: center;
+  z-index: 10;
 }
 
 .book-results {
@@ -135,16 +136,36 @@ body.noscroll {
   position: relative;
 }
 
-.form-container {
+.book:last-child {
+  margin-bottom: 12rem;
+}
+
+.overlay {
+  display: none;
   position: absolute;
   top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(rgba(23, 37, 42, 0.9), rgba(23, 37, 42, 0.5));
+  z-index: 2;
+}
+
+.overlay.visible {
+  display: block;
+}
+
+.form-container {
+  position: absolute;
+  top: 10vh;
   left: 0;
   right: 0;
   transition: all var(--transition-duration) ease-in-out;
   transform: scale(0);
   display: flex;
   justify-content: center;
-  height: 100vh;
+  height: 90vh;
+  z-index: 3;
 }
 
 .form-container.visible {
@@ -179,7 +200,8 @@ body.noscroll {
 
 .form__cover-div {
   position: relative;
-  height: 30vh;
+  height: 30%;
+  max-height: 18rem;
   margin-inline: auto;
   margin-bottom: 4rem;
 }
@@ -240,10 +262,18 @@ body.noscroll {
   cursor: pointer;
 }
 
+.form__checkbox {
+  text-align: center;
+}
+
+.form__checkbox p {
+  margin-bottom: 1rem;
+}
+
 .add-book-btn {
-  z-index: 2;
-  width: 8rem;
-  height: 8rem;
+  z-index: 4;
+  width: 7rem;
+  height: 7rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -263,9 +293,8 @@ body.noscroll {
 .add-book-btn--add {
   position: fixed;
   background-color: var(--primary-color);
-  right: 2.4rem;
-  bottom: 2.4rem;
-  z-index: 1000;
+  right: 2rem;
+  bottom: 1.8rem;
 }
 
 .add-book-btn--add.transform-to-cancel {
@@ -276,8 +305,8 @@ body.noscroll {
 .add-book-btn--ok {
   position: fixed;
   background-color: var(--color-green);
-  left: 2.4rem;
-  bottom: 2.4rem;
+  left: 2rem;
+  bottom: 1.8rem;
   visibility: hidden;
 }
 
@@ -372,7 +401,7 @@ body.noscroll {
 }
 
 .book__progress-bar {
-  background: gray;
+  background-color: var(--primary-color);
   border-radius: 2rem;
   height: 100%;
 }
@@ -420,7 +449,7 @@ body.noscroll {
 }
 
 .toggle {
-  --width: 50px;
+  --width: 5rem;
   --height: calc(var(--width) / 2);
   --border-radius: calc(var(--height) / 2);
   display: inline-block;
@@ -501,7 +530,7 @@ body.noscroll {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
   grid-gap: 1.5rem;
-  z-index: 104;
+  z-index: 2;
   transform: translateX(100%);
   transition: all var(--transition-duration) ease-in-out;
 }
@@ -586,6 +615,7 @@ body.noscroll {
   color: white;
   font-weight: 700;
   display: flex;
+  padding-inline: 2rem;
   justify-content: center;
   align-items: center;
   visibility: hidden;

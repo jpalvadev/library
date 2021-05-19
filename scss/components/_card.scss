@@ -87,7 +87,6 @@
     margin: 1rem auto;
     width: 100%;
     padding-inline: 2rem;
-    // background: chartreuse;
     // margin-top: 0.5rem;
   }
 
@@ -100,7 +99,7 @@
   }
 
   &__progress-bar {
-    background: gray;
+    background-color: var(--primary-color);
     border-radius: 2rem;
     // width: 90%;
     height: 100%;

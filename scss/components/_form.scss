@@ -1,6 +1,6 @@
 .form-container {
   position: absolute;
-  top: 0;
+  top: 10vh;
   left: 0;
   // bottom: 0;
   right: 0;
@@ -12,7 +12,8 @@
   display: flex;
   justify-content: center;
   // align-items: center;
-  height: 100vh;
+  height: 90vh;
+  z-index: 3;
 
   &.visible {
     overflow: hidden;
@@ -27,6 +28,11 @@
 
 .form {
   position: relative;
+
+  // position: absolute;
+  // height: 100%;
+  // width: 100%;
+
   // height: 100vh;
   // height: 64rem;
   background-color: white;
@@ -55,7 +61,8 @@
   &__cover-div {
     // width: 10%;
     position: relative;
-    height: 30vh;
+    height: 30%;
+    max-height: 18rem;
     margin-inline: auto;
     // background-color: goldenrod;
     margin-bottom: 4rem;
@@ -128,5 +135,15 @@
     background-color: var(--primary-color);
     border-radius: 8px;
     cursor: pointer;
+  }
+
+  &__checkbox {
+    // margin: 0 auto;
+    text-align: center;
+    // background-color: aqua;
+    p {
+      margin-bottom: 1rem;
+    }
+    // width: 100%;
   }
 }

@@ -7,7 +7,11 @@ const transitionDuration =
 
 const nav = document.querySelector('.nav');
 
-document.body.style.minHeight = window.innerHeight;
+const overlay = document.querySelector('.overlay');
+
+let appHeight = '';
+// document.body.style.minHeight = window.innerHeight;
+// document.body.style.height = window.innerHeight;
 
 // Buttons
 const addBtn = document.querySelector('.add-book-btn--add');
@@ -35,6 +39,14 @@ const searchBtn = document.querySelector('.search-btn');
 
 const searchResultsContainer = document.querySelector('.search-results');
 
+const inputFields = [
+  formTitle,
+  formAuthor,
+  formPages,
+  formPagesRead,
+  searchInput,
+];
+
 // Entered books Container
 const booksContainer = document.querySelector('.books-container');
 
@@ -59,6 +71,10 @@ class Book {
     this.cover = cover;
     this.isbn = isbn;
     this.complete = complete;
+    this.pagesReadPerc = Math.floor((this.pagesRead * 100) / this.pages);
+    // this.pagesReadPerc = this.complete
+    //   ? 100
+    //   : Math.floor((this.pagesRead * 100) / this.pages);
   }
 }
 
@@ -87,6 +103,20 @@ class Data {
   removeBookFromLS(isbn) {
     const books = this.getBooksFromLS().filter((book) => book.isbn !== isbn);
     localStorage.setItem('books', JSON.stringify(books));
+  }
+
+  updateReadStatusOnLS(isbn) {
+    const books = this.getBooksFromLS();
+
+    const index = books.findIndex((book) => book.isbn === isbn);
+    // console.log(books[index]);
+    // console.log(books[index].complete);
+
+    books[index].complete = !books[index].complete;
+    // console.log(books[index].complete);
+    localStorage.setItem('books', JSON.stringify(books));
+
+    return books[index];
   }
 
   async getBookList(keyword) {
@@ -169,8 +199,8 @@ class UI {
     // form text
     formTitle.value = book.title;
     formAuthor.value = book.authors?.[0] || '';
-    formPages.value = book?.pageCount || 0;
-    formPagesRead.value = 0;
+    formPages.value = book?.pageCount || '';
+    formPagesRead.value = '';
 
     // const img = await app.data.getBetterImg(book);
     // console.log(img);
@@ -189,7 +219,9 @@ class UI {
   }
 
   addBook(book) {
-    const pagesReadPerc = Math.floor((book.pagesRead * 100) / book.pages);
+    // const pagesReadPerc = book.complete
+    //   ? 100
+    //   : Math.floor((book.pagesRead * 100) / book.pages);
 
     booksContainer.innerHTML += `
     <div class="book">
@@ -200,18 +232,24 @@ class UI {
         <h3 class="book__title">${book.title} - ${book.author}</h3>
         <div class="book__pages-isbn">
           <p class="book__pages"><strong>Pages:</strong><br />${book.pages}</p>
+          
           <p class="book__isbn"><strong>ISBN:</strong><br />${book.isbn}</p>
         </div>
         <p class="book__description">${book.description}...</p>
         <div class="book__progress">
           <div class="book__progress-div">
-            <div class="book__progress-bar" style="width:${pagesReadPerc}%;"></div>
+            <div class="book__progress-bar" style="width:${
+              book.complete ? 100 : book.pagesReadPerc
+            }%;"></div>
           </div>
-          <p class="book__progress-percent">${pagesReadPerc}%</p>
+          <p class="book__progress-percent">${
+            book.complete ? 100 : book.pagesReadPerc
+          }%</p>
         </div>
         <div class="book__btns">
           <button class="book__delete" data-isbn="${book.isbn}">Remove</button>
-          <label class="toggle">Read?
+          <label class="toggle">
+          <p>Read?</p>
             <input class="toggle__input" name="" type="checkbox" ${
               book.complete ? 'checked' : ''
             } />
@@ -225,6 +263,33 @@ class UI {
 
   deleteBook(e) {
     e.parentElement.parentElement.parentElement.remove();
+  }
+
+  updateReadStatus(target, book) {
+    const progressBar =
+      target.parentElement.parentElement.parentElement.querySelector(
+        '.book__progress-bar'
+      );
+
+    const progressText =
+      target.parentElement.parentElement.parentElement.querySelector(
+        '.book__progress-percent'
+      );
+
+    const checkbox = target.parentElement.querySelector('input');
+    console.log(checkbox.checked);
+
+    console.log(book);
+
+    console.log(progressBar);
+
+    if (book.complete) {
+      progressBar.style.width = '100%';
+      progressText.textContent = '100%';
+    } else {
+      progressBar.style.width = `${book.pagesReadPerc}%`;
+      progressText.textContent = `${book.pagesReadPerc}%`;
+    }
   }
 
   showAlert(message, status) {
@@ -311,7 +376,27 @@ class App {
 
     // document.body.classList.remove('noscroll');
     this.UI.scrollToTop();
+    // document.body.classList.add('noscroll');
+    const formHeight = formContainer.offsetHeight;
+    console.log(formHeight);
+    formContainer.style.height = `${formHeight}px`;
+    document.body.style.minHeight = `${formHeight}px`;
     document.body.classList.add('noscroll');
+
+    // setTimeout(() => {
+    //   let rect = formContainer.getBoundingClientRect();
+    //   console.log(rect.top, rect.right, rect.bottom, rect.left);
+    //   addBtn.style.position = 'absolute';
+    //   addBtn.style.top = `${rect.bottom}px`;
+    // }, transitionDuration);
+  }
+
+  updateReadStatus(target, isbn) {
+    // Update Read status on LS
+    const book = app.data.updateReadStatusOnLS(isbn);
+
+    // Update Read status on UI
+    app.UI.updateReadStatus(target, book);
   }
 }
 
@@ -329,14 +414,20 @@ addBtn.addEventListener('click', function (e) {
   formCover.src = './images/white.jpg'; // to avoid decentering of loading spinner
   e.preventDefault();
   if (!addBtn.classList.contains('transform-to-cancel')) {
-    app.UI.showElements(searchBooksForm, booksContainer);
+    app.UI.showElements(searchBooksForm, booksContainer, overlay);
     // searchBooksForm.scrollIntoView({ block: 'end', behavior: 'smooth' });
     app.UI.scrollToTop();
 
     document.body.classList.add('noscroll');
     addBtn.classList.add('transform-to-cancel');
   } else {
-    app.UI.hideElements(searchBooksForm, searchResultsContainer, formContainer);
+    app.UI.hideElements(
+      searchBooksForm,
+      searchResultsContainer,
+      formContainer,
+      okBtn,
+      overlay
+    );
     app.UI.clearSearchResults();
 
     document.body.classList.remove('noscroll');
@@ -347,6 +438,8 @@ addBtn.addEventListener('click', function (e) {
 // Search button click event listener
 searchBtn.addEventListener('click', (e) => {
   e.preventDefault();
+
+  appHeight = `${window.innerHeight}px`;
 
   if (!searchInput.value) {
     app.UI.showAlert('You have to type something...', false);
@@ -380,8 +473,8 @@ okBtn.addEventListener('click', () => {
   const author = formAuthor.value;
   const description =
     app.UI.currentBook?.description?.slice(0, 200) || 'No description';
-  const pages = formPages.value;
-  const pagesRead = formPagesRead.value;
+  const pages = Number(formPages.value);
+  const pagesRead = Number(formPagesRead.value);
   const cover = app.UI.currentBook.cover;
   const isbn = app.UI.currentBook.industryIdentifiers[0].identifier;
   const complete = checkboxRead.checked;
@@ -397,6 +490,8 @@ okBtn.addEventListener('click', () => {
   );
 
   if (pagesRead > pages) {
+    // console.log(Number(pagesRead), pages);
+
     app.UI.showAlert(
       'You cannot read more pages than there are in the book... dah!',
       false
@@ -409,153 +504,29 @@ okBtn.addEventListener('click', () => {
   app.UI.addBook(book);
   app.data.addBook(book);
 
-  app.UI.hideElements(formContainer, okBtn);
+  app.UI.hideElements(formContainer, okBtn, overlay);
 
   addBtn.classList.remove('transform-to-cancel');
 });
 
-booksContainer.addEventListener('click', (e) => {
-  console.log(e.target);
+// Using mouseup to prevent the event from firing twice
+booksContainer.addEventListener('mouseup', (e) => {
+  // console.log(e.target);
 
-  if (!e.target.classList.contains('book__delete')) return;
-  // Remove book from UI
+  if (e.target.closest('label')?.classList.contains('toggle')) {
+    // e.stopPropagation();
+    const isbn = e.target.parentElement.previousElementSibling.dataset.isbn;
 
-  app.UI.deleteBook(e.target);
-
-  // Remove book from LS
-  app.data.removeBookFromLS(e.target.dataset.isbn);
-});
-
-///////////////////////////////////
-///////////////////////////////////
-///////////////////////////////////
-/*
-
-
-// UI Class: Handle UI Tasks
-class UI {
-  static displayBooks() {
-    const books = Store.getBooks();
-
-    books.forEach((book) => UI.addBookToList(book));
+    app.updateReadStatus(e.target, isbn);
   }
+  // e.preventDefault();
 
-  static addBookToList(book) {
-    const list = document.querySelector('#book-list');
+  if (e.target.classList.contains('book__delete')) {
+    // Remove book from UI
 
-    const row = document.createElement('tr');
+    app.UI.deleteBook(e.target);
 
-    row.innerHTML = `
-      <td>${book.title}</td>
-      <td>${book.author}</td>
-      <td>${book.isbn}</td>
-      <td><a href="#" class="btn btn-danger btn-sm delete">X</a></td>
-    `;
-
-    list.appendChild(row);
-  }
-
-  static deleteBook(el) {
-    if(el.classList.contains('delete')) {
-      el.parentElement.parentElement.remove();
-    }
-  }
-
-  static showAlert(message, className) {
-    const div = document.createElement('div');
-    div.className = `alert alert-${className}`;
-    div.appendChild(document.createTextNode(message));
-    const container = document.querySelector('.container');
-    const form = document.querySelector('#book-form');
-    container.insertBefore(div, form);
-
-    // Vanish in 3 seconds
-    setTimeout(() => document.querySelector('.alert').remove(), 3000);
-  }
-
-  static clearFields() {
-    document.querySelector('#title').value = '';
-    document.querySelector('#author').value = '';
-    document.querySelector('#isbn').value = '';
-  }
-}
-
-// Store Class: Handles Storage
-class Store {
-  static getBooks() {
-    let books;
-    if(localStorage.getItem('books') === null) {
-      books = [];
-    } else {
-      books = JSON.parse(localStorage.getItem('books'));
-    }
-
-    return books;
-  }
-
-  static addBook(book) {
-    const books = Store.getBooks();
-    books.push(book);
-    localStorage.setItem('books', JSON.stringify(books));
-  }
-
-  static removeBook(isbn) {
-    const books = Store.getBooks();
-
-    books.forEach((book, index) => {
-      if(book.isbn === isbn) {
-        books.splice(index, 1);
-      }
-    });
-
-    localStorage.setItem('books', JSON.stringify(books));
-  }
-}
-
-// Event: Display Books
-document.addEventListener('DOMContentLoaded', UI.displayBooks);
-
-// Event: Add a Book
-document.querySelector('#book-form').addEventListener('submit', (e) => {
-  // Prevent actual submit
-  e.preventDefault();
-
-  // Get form values
-  const title = document.querySelector('#title').value;
-  const author = document.querySelector('#author').value;
-  const isbn = document.querySelector('#isbn').value;
-
-  // Validate
-  if(title === '' || author === '' || isbn === '') {
-    UI.showAlert('Please fill in all fields', 'danger');
-  } else {
-    // Instatiate book
-    const book = new Book(title, author, isbn);
-
-    // Add Book to UI
-    UI.addBookToList(book);
-
-    // Add book to store
-    Store.addBook(book);
-
-    // Show success message
-    UI.showAlert('Book Added', 'success');
-
-    // Clear fields
-    UI.clearFields();
+    // Remove book from LS
+    app.data.removeBookFromLS(e.target.dataset.isbn);
   }
 });
-
-// Event: Remove a Book
-document.querySelector('#book-list').addEventListener('click', (e) => {
-  // Remove book from UI
-  UI.deleteBook(e.target);
-
-  // Remove book from store
-  Store.removeBook(e.target.parentElement.previousElementSibling.textContent);
-
-  // Show success message
-  UI.showAlert('Book Removed', 'success');
-});
-
-*/
