@@ -114,11 +114,15 @@ class Data {
 
     this.searchResults = await response.json();
 
+    console.log(this.searchResults);
+
     return this.searchResults;
   }
 
   async getBetterImg(book) {
-    let img = book.imageLinks.thumbnail;
+    let img = book.imageLinks.thumbnail.replace('http', 'https');
+    console.log(img);
+
     try {
       for (let i = 0; i < book.industryIdentifiers.length; i++) {
         const imgURL = `https://covers.openlibrary.org/b/isbn/${book.industryIdentifiers[i].identifier}-L.jpg`;
@@ -164,7 +168,10 @@ class UI {
       searchResultsContainer.innerHTML += `
       <div class="result">
         <img class="result__img"
-          src="${book.volumeInfo.imageLinks?.thumbnail || imgNotFound}"
+          src="${
+            book.volumeInfo.imageLinks?.thumbnail.replace('http', 'https') ||
+            imgNotFound
+          }"
           alt=""
         />
         <p class="result__title">${book.volumeInfo.title}</p>
